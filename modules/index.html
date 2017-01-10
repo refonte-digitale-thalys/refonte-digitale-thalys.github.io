@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+	<title>Modules de la refonte digitale</title>
+	<meta charset="utf-8">
+</head>
+
+<body>
+	<div class="modules"></div>
+</body>
+
+<style>
+
+	body {
+		font-family: Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;
+		margin: 0;
+	}
+
+	.module { padding: 1rem; }
+	.module__container { max-width: 64rem; margin: auto; }
+
+	.module:first-child .light-text { display: none; }
+
+	.module:nth-child(even) {
+		background-color: #fafafa;
+	}
+
+	.illustrations {
+		display: flex;
+		flex-wrap: wrap;
+		margin: .5rem -.5rem;
+	}
+
+	.illustration {
+		width: 16rem; height: 8rem;
+		max-width: 16rem; max-height: 8rem;
+		margin: .5rem;
+		border-radius: 4px; border: 1px solid #ccc;
+		background-color: white; background-size: 16rem auto; background-position: center center; background-repeat: no-repeat;
+	}
+
+	.light-text { font-style: italic; color: #999;	}
+	.light { font-weight: normal; color: #999; font-size: .8em; }
+
+</style>
+
+<!-- vue -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.3/vue.min.js"></script>
+
+<!-- vue-resource -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.0.3/vue-resource.min.js"></script>
+
+<!-- vuex -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vuex/2.0.0/vuex.min.js"></script>
+
+<!-- markdown (marked) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
+
+<!-- custom airtable -->
+<script src="../airtable.js"></script>
+
+<!-- custom -->
+<script src="script.js"></script>
+
+<script>vueSetup()</script>
+
+<!--
+
+Présidence :
+- Edito
+- On recherche des volontaires
+
+Projet :
+- Commissions en cours
+- Commissions à venir
+
+Comm :
+- Articles du site
+- Tweet de la semaine
+- Revue de presse
+
+Secrétariat :
+- Portrait de militant
+- Bienvenue à 
+- Renouvellement de fédés / changements de postes
+- Nos élu(e)s défendent
+
+Evènementiel :
+- Evènement
+
+
+
+-->
+
+</html>
