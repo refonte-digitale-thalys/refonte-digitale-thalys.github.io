@@ -1,0 +1,65 @@
+Le template "simple" avec ses 3 variantes :
+- variante principale
+- variante fiche présentant un contenu
+- variante pour la page horaires
+
+Le tempate de "grand header" avec ses 2 variantes :
+- variante à une colonne
+- variante à deux colonnes
+
+Le template "mon compte".
+
+---
+
+Trois modules de template :
+- Navigation principale
+- Navigation de mon compte
+- Footer
+
+22 modules :
+- Bloc de contenu
+- Bloc de présentation
+- Bloc d'information
+- Bloc de comparaison
+- Bloc d'aide
+- Bloc d'info trafic
+- Alerte de mon compte
+- Onglets
+- Horaires sur une journée
+- Horaires d'une offre ou promo
+- Synthèse d'une réservation
+- Détails et tarifs
+- Contenus escamotables
+- Calendrier des meilleurs prix
+- Résultats de recherche
+- Bannière de CTA
+- Formulaire principal
+- Pré-booking
+- Liste d'actions
+- Carte de fidélité
+- Pop-in
+- Balade
+
+16 composants :
+- Boutons
+- Carte Destination
+- Carte Offre
+- Ensemble de 3 grandes cartes
+- Pastilles
+- Information
+- Tableau
+- Colonnes
+- Formulaire
+- Jauge
+- Liste de lien
+- Images
+- Étiquette
+- Carte simple
+- Galerie d'images intra-bloc
+- Vidéo intra-bloc
+
+4 exemples d'assemblage :
+- Destinations x3
+- Service x4
+- Offres x3
+- Blocs du dashboard
