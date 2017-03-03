@@ -77,9 +77,9 @@ function vueSetup() {
 							<a
 								class="illustration"
 								v-for="illustration in module.IlluDesktop"
-								:style="{ backgroundImage: 'url(' + illustration.url + ')' }"
 								:href="illustration.url" target='_module'
 								>
+								<img class="illustration__image" :src="illustration.thumbnails.small.url" />
 							</a>
 						</div>
 						<div v-else class="light-text">

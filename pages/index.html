@@ -2,12 +2,12 @@
 <html lang="fr">
 
 <head>
-	<title>Modules de la refonte digitale</title>
+	<title>Pages du site Thalys actuel</title>
 	<meta charset="utf-8">
 </head>
 
 <body>
-	<div class="modules"></div>
+	<div class="pages"></div>
 </body>
 
 <style>
@@ -21,34 +21,8 @@
 	.module { padding: 1rem; }
 	.module__container { max-width: 50.4rem; margin: auto; }
 
-	.module:first-child .light-text { display: none; }
-
-	.module:nth-child(odd) {
-		background-color: #fafafa;
-	}
-
-	.illustrations {
-		display: flex;
-		flex-wrap: wrap;
-		margin: .5rem -.5rem;
-	}
-
-	.illustration {
-		max-width: 16rem; max-height: 8rem;
-		margin: .5rem;
-		border-radius: 4px; border: 1px solid #ccc;
-		background-color: white; background-size: 16rem auto; background-position: center center; background-repeat: no-repeat;
-	}
-
-	.illustration__image {
-		max-width: 100%;
-		max-height: 100%;
-	}
-
-	.light-text { font-style: italic; color: #999;	}
-	.light { font-weight: normal; color: #999; font-size: .8em; }
-
-	blockquote { position: relative; margin-left: 0; padding-left: 1rem; border-left: .25rem solid #eee; font-style: italic; }
+	.pages { margin-top: 1rem; }
+	.page { padding-left : 1rem; }
 
 </style>
 
@@ -61,13 +35,8 @@
 <!-- vuex -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vuex/2.0.0/vuex.min.js"></script>
 
-<!-- markdown (marked) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
-
-<!-- custom airtable -->
-<script src="../airtable.js"></script>
-
 <!-- custom -->
+<script src="pages-thalys.js"></script>
 <script src="script.js"></script>
 
 <script>vueSetup()</script>
