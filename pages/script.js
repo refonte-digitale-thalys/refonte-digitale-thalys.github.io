@@ -1,32 +1,33 @@
 function vueSetup() {
 
+	// Recursive page tree
+	Vue.component('page-tree', {
+		props: ['pages'],
+		template: `
+			<div class="pages">
+				<div class="page" v-for="page in pages">
+					<span class="page__name" v-html="page.name"></span>
+					<page-tree v-if="page.pages" :pages="page.pages"></page-tree>
+				</div>
+			</div>
+		`
+	})
+
+
 	// App
 	var app = new Vue({
 		el: '.pages',
 		template: `
-			<div class="pages" lang="fr">
-				<div class="page" v-for="page in pages">
-					<span v-html="page.name"></span>
-					<div class="page" v-for="page in page.pages">
-						<span v-html="page.name"></span>
-						<div class="page" v-for="page in page.pages">
-							<span v-html="page.name"></span>
-							<div class="page" v-for="page in page.pages">
-								<span v-html="page.name"></span>
-							</div>
-						</div>
-					</div>
-				</div>
+			<div class="app" lang="fr">
+				<page-tree :pages="pages"></page-tree>
 			</div>
 		`,
 		computed: {
 			pages () {
-				pages = pages.slice(0,100)
 				for (i in pages) {
 					pages[i] = pages[i].split('/')
 				}
-				pages = buildTree(pages)
-				superTree(pages)
+				pages = treefy(pages)
 				return pages
 			}
 		}
@@ -38,7 +39,9 @@ function onlyUnique(value, index, self) {
 	return self.indexOf(value) === index;
 }
 
-function buildTree(pages) {
+function branchify(pages) {
+
+	console.log('branchifying : ', pages)
 
 	var nodes = []
 
@@ -51,6 +54,8 @@ function buildTree(pages) {
 
 	new_pages = []
 
+	console.log(nodes)
+
 	for (i in nodes) {
 		var nodeName = nodes[i]
 		var nodePages = pages.filter(obj => obj[0] == nodeName)
@@ -60,13 +65,21 @@ function buildTree(pages) {
 		if (!nodeName) { nodeName = '/'}
 		new_pages.push({'name': nodeName, 'pages': nodePages})
 	}
-
 	return new_pages
 
 }
 
-function superTree(pages) {
+function treefy(pages) {
+	pages = branchify(pages)
 	for (i in pages) {
-		pages[i].pages = buildTree(pages[i].pages)
+		if (pages[i].hasOwnProperty('pages')) {
+			pages[i].pages = branchify(pages[i].pages)
+			for (i in pages[i].pages) {
+				if (pages[i].pages[i].hasOwnProperty('pages')) {
+					pages[i].pages[i].pages = branchify(pages[i].pages[i].pages)
+				}
+			}
+		}
 	}
+	return pages
 }
