@@ -1,5 +1,11 @@
 function vueSetup() {
 
+	window.store = new Vuex.Store({
+		state: {
+			'pages': pages,
+		}
+	})
+
 	// Recursive page tree
 	Vue.component('page-tree', {
 		props: ['pages'],
@@ -24,7 +30,7 @@ function vueSetup() {
 		`,
 		computed: {
 			pages () {
-				for (i in pages) {
+				for (i in store.state.pages) {
 					pages[i] = pages[i].split('/')
 				}
 				pages = treefy(pages)
@@ -35,7 +41,7 @@ function vueSetup() {
 
 }
 
-function onlyUnique(value, index, self) { 
+function onlyUnique(value, index, self) {
 	return self.indexOf(value) === index;
 }
 
@@ -47,6 +53,7 @@ function branchify(pages) {
 
 	for (i in pages) { // get all different possible pages
 		var page = pages[i]
+		console.log(page)
 		nodes.push(page[0])
 	}
 
@@ -54,7 +61,7 @@ function branchify(pages) {
 
 	new_pages = []
 
-	console.log(nodes)
+	console.log('nodes : ', nodes)
 
 	for (i in nodes) {
 		var nodeName = nodes[i]
@@ -62,24 +69,41 @@ function branchify(pages) {
 		for (i in nodePages) {
 			nodePages[i].splice(0,1)
 		}
-		if (!nodeName) { nodeName = '/'}
-		new_pages.push({'name': nodeName, 'pages': nodePages})
+		if (!nodeName) {
+			nodeName = '/'
+			new_pages.push({'name': nodeName})
+		} else {
+			new_pages.push({'name': nodeName, 'pages': nodePages})
+		}
 	}
+
+	console.log('new pages : ')
+	for (i in new_pages) {
+		console.log('	', new_pages[i].name)
+	}
+	console.log(new_pages)
+	console.log('--------------------------------------------------')
+
 	return new_pages
 
 }
 
 function treefy(pages) {
-	pages = branchify(pages)
-	for (i in pages) {
-		if (pages[i].hasOwnProperty('pages')) {
-			pages[i].pages = branchify(pages[i].pages)
-			for (i in pages[i].pages) {
-				if (pages[i].pages[i].hasOwnProperty('pages')) {
-					pages[i].pages[i].pages = branchify(pages[i].pages[i].pages)
-				}
-			}
+	var tree = branchify(pages)
+	for (i in tree) {
+		if (tree[i].hasOwnProperty('pages')) {
+			console.log('DEBUGGING')
+			console.log('test branchify : ', branchify(tree[i].pages))
+			console.log(tree[i])
+			tree[i]['pages'] = branchify(tree[i]['pages'])
+			console.log(tree[i])
+			console.log('--------------------------------------------------')
+//		for (i in tree[i].pages) {
+//			if (tree[i].pages[i].hasOwnProperty('pages')) {
+//				tree[i].pages[i].pages = branchify(tree[i].pages[i].pages)
+//			}
+//		}
 		}
 	}
-	return pages
+	return tree
 }
