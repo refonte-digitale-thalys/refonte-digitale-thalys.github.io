@@ -4,7 +4,58 @@ body {
 	color: #222;
 }
 
-.page { padding-left : .5rem; }
+.page {
+    border: 1px solid #eee;
+    border-right: none;
+    border-top-left-radius: 4px;
+    margin: .25rem;
+    padding: .25rem .5rem;
+    padding-right: 0;
+    margin-right: 0;
+}
+
+.page { background-color: #fffffa }
+.page .page { background-color: #faffff; }
+.page .page .page { background-color: #fffffa }
+.page .page .page .page { background-color: #faffff; }
+.page .page .page .page .page { background-color: #fffffa }
+.page .page .page .page .page .page { background-color: #faffff; }
+.page .page .page .page .page .page .page { background-color: #fffffa }
+.page .page .page .page .page .page .page .page { background-color: #faffff; }
+.page .page .page .page .page .page .page .page .page { background-color: #fffffa }
+.page .page .page .page .page .page .page .page .page .page { background-color: #faffff; }
+.page .page .page .page .page .page .page .page .page .page .page { background-color: #fffffa }
+.page .page .page .page .page .page .page .page .page .page .page .page { background-color: #faffff; }
+.page .page .page .page .page .page .page .page .page .page .page .page .page { background-color: #fffffa }
+.page .page .page .page .page .page .page .page .page .page .page .page .page .page { background-color: #faffff; }
+.page .page .page .page .page .page .page .page .page .page .page .page .page .page .page { background-color: #fffffa }
+.page .page .page .page .page .page .page .page .page .page .page .page .page .page .page .page { background-color: #faffff; }
+.page .page .page .page .page .page .page .page .page .page .page .page .page .page .page .page .page { background-color: #fffffa }
+.page .page .page .page .page .page .page .page .page .page .page .page .page .page .page .page .page .page { background-color: #faffff; }
+
+
+.page__checkbox { display: none; }
+.page__count { font-size: .7em; position: relative; bottom: .25rem;}
 
 .page > .pages { display: none; }
 .page > .page__checkbox:checked ~ .pages { display: block; }
+
+.page__deploy { 
+	float: right;
+	padding: 0.25rem 1rem 0.25rem 7rem;
+	position: relative;
+	top: -.25rem;
+	color: #999;
+	font-weight: bold;
+	transition: background-color .25s;
+}
+
+.page__deploy:hover {
+	background-color: rgba(0,0,0,.1);
+	cursor: pointer;
+}
+
+.page__deploy::after { content: '+'; }
+.page__checkbox:checked ~ .page__deploy::after { content: '-'; }
+
+.chevron:link { text-decoration: none; color: black; }
