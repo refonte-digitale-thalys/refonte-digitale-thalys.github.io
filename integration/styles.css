@@ -1,0 +1,107 @@
+
+@font-face {
+    font-family: 'Gotham Narrow';
+    src: url("Gotham Narrow Light.otf") format("opentype");
+}
+
+@font-face {
+    font-family: 'Gotham Narrow';
+    src: url("Gotham Narrow Book.otf") format("opentype");
+    font-weight: bold;
+}
+
+
+html {
+	font-family: 'Gotham Narrow';
+	font-size: 16px;
+	background-color: #f2f2f2;
+	line-height: 1.5;
+}
+
+body {
+	margin: 0;
+}
+
+.container { 
+	max-width: 75rem; /* 1200px */
+	margin: auto;
+}
+
+nav {
+	height: 6.0625rem;
+	background-color: rgba(255,255,255,.15)
+}
+
+.page-top {
+	color: white;
+	background-image: url('photo.jpg');
+	background-size: cover;
+	background-position: center;
+}
+
+.header { padding: 1.8750rem 1.2500rem; }
+.header__chemin-de-fer { font-size: .85rem; margin: 0;}
+.header__titre-de-la-page { margin: 0; }
+.header__texte-introductif { font-size: 1.25rem; margin: 0;}
+.page-top::after { display: block; content: ''; height: 8rem; margin-bottom: -8rem; }
+
+
+
+
+h1, h2, h3, h4, h5, h6 { }
+
+h1 { font-size: 1.8750rem; text-transform: uppercase; } /* 30px */
+h1.super { font-size: 2.8125rem; }						/* 45px */
+h2 { font-size: 1.5000rem; text-transform: uppercase; } /* 24px */
+h3 { font-size: 1.2500rem; }							/* 20px */
+h4 { font-weight: bold; }								/* 16px */
+
+p { max-width: 42.825em; margin: 1rem 0; line-height: inherit; }
+
+
+
+
+
+/* Les blocs blancs qui font l'architecture des pages */
+
+.bloc {
+	margin: 1.2500rem; /* 30px et 20px */
+	background-color: white;
+	padding: 1.8750rem;
+}
+
+.bloc > :first-child { margin-top: 0; }
+.bloc > :last-child { margin-bottom: 0; }
+
+[role="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+button  {
+	font-size: 1.125rem;
+	padding: 0.84375rem 1.8750rem;
+	border-radius: .25rem;
+	text-transform: uppercase;
+	border: none;
+	color: white;
+	background-color: #bf2235;
+	transition: background-color .25s;
+	font-family: inherit;
+}
+
+[role="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover,
+button:hover {
+	background-color: #a82033;
+	cursor: pointer;
+}
+
+[role="button"]:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus,
+input[type="button"]:focus,
+button:focus {
+	outline: none;
+}
