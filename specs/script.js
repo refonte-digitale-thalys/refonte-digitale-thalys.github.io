@@ -33,35 +33,6 @@ function vueSetup() {
 
 						}
 					}
-//
-//					if (state['stories'] && state['notes']) {
-//
-//						// once both stories and notes have been fetched, we match them
-//						var stories = state['stories']
-//						var notes = state['notes']
-//
-//						for (i in stories) {
-//							var story = stories[i]
-//							for (i in story.Notes) {
-//
-//								// for each story note, replace the note ID by the full note data
-//								story.Notes[i] = notes.filter(obj => obj.airTableId  == story.Notes[i] )[0]
-//								if (story.Notes[i].hasOwnProperty('Note')) {
-//									story.Notes[i].Note = marked(story.Notes[i].Note)
-//								}
-//			
-//							}
-//						}
-//
-//						// Ordonne les stories
-//						state.stories.sort(function(a, b){
-//							a = parseInt(a.Ordre)
-//							b = parseInt(b.Ordre)
-//							return ((a < b) ? -1 : ((a > b) ? 1 : 0));
-//						})
-//
-//					}
-
 				}
 			}
 		}
@@ -94,7 +65,6 @@ function vueSetup() {
 							En tant qu'{{ story['En tant que'] }}, je veux
 							{{ story['Je veux'] }}
 							<span v-if="story['Pourquoi']">, </span>
-							<span v-else>.</span>
 							{{ story['Pourquoi'] }}.
 						</blockquote>
 						<div v-for="comment in story['Commentaires']">
@@ -102,15 +72,13 @@ function vueSetup() {
 							<div v-if="comment.Illustrations" class="illustrations">
 								<a
 									class="illustration"
-									v-for="illustration in comment.Illustrations]"
+									v-for="illustration in comment.Illustrations"
 									:href="illustration.url" target='_story'
 									>
 									<img class="illustration__image" :src="illustration.thumbnails.small.url" />
 								</a>
 							</div>
-
 						</div>
-
 					</div>
 				</div>
 
