@@ -62,10 +62,7 @@ function vueSetup() {
 					<div class="story__container">
 						<h4>{{ story['Titre'] }}</h4>
 						<blockquote>
-							En tant qu'{{ story['En tant que'] }}, je veux
-							{{ story['Je veux'] }}
-							<span v-if="story['Pourquoi']">, </span>
-							{{ story['Pourquoi'] }}.
+							En tant qu'{{ story['En tant que'] }}, je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.
 						</blockquote>
 						<div v-for="comment in story['Commentaires']">
 							<div v-html="comment.Commentaire"></div>
