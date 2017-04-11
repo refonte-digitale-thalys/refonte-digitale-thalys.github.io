@@ -3,7 +3,8 @@ function vueSetup() {
 	window.store = new Vuex.Store({
 		state: {
 			'modules': false,
-			'notes': false
+			'notes': false,
+			'modal': false
 		},
 		mutations: {
 			updateData(state, payload) {
@@ -37,8 +38,13 @@ function vueSetup() {
 						})
 
 					}
-
 				}
+			},
+			openModal(state, payload) {
+				state['modal'] = payload
+			},
+			closeModal(state) {
+				state['modal'] = false
 			}
 		}
 	})
@@ -74,13 +80,17 @@ function vueSetup() {
 						<div v-if="module.Assemblage" class="light-text">Ce n'est qu'un assemblage de plusieurs composants. Il ne devrait pas nécessiter d'intégration spécifique.</div>
 						<div class="note" v-for="note in module.Notes" v-html="note.Note"></div>
 						<div v-if="module.IlluDesktop" class="illustrations">
-							<a
+							<span
 								class="illustration"
 								v-for="illustration in module.IlluDesktop"
-								:href="illustration.url" target='_module'
 								>
-								<img class="illustration__image" :src="illustration.thumbnails.small.url" />
-							</a>
+								<img
+									class="illustration__image"
+									:src="illustration.thumbnails.small.url"
+									v-on:click="openModal({'image': illustration.url })"
+									/>
+								<a :href="illustration.url" hidden>Voir</a>
+							</span>
 						</div>
 						<div v-else class="light-text">
 							<p>Ce module ne dispose pas encore d'une illustration.</p>
@@ -88,14 +98,34 @@ function vueSetup() {
 					</div>
 				</div>
 
+				<div class="modal__wrapper" v-bind:class="{ deployed: modal }">
+					<div v-if="modal" class="modal" v-on:click="closeModal()">
+						<img class="modal__image" v-if="modal.image" :src="modal.image" />
+					</div>
+				</div>
+
 			</div>
 		
 		`,
+
 		computed: {
 			modules () {
 				return this.$store.state.modules
+			},
+			modal () {
+				return this.$store.state.modal
+			}
+		},
+
+		methods: {
+			openModal: function(payload) {
+				this.$store.commit('openModal', payload)
+			},
+			closeModal: function() {
+				this.$store.commit('closeModal')
 			}
 		}
+
 	})
 
 }

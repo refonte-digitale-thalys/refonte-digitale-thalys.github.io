@@ -5,7 +5,8 @@ function vueSetup() {
 			'themes': false,
 			'epics': false,
 			'stories': false,
-			'comments': false
+			'comments': false,
+			'modal': false
 		},
 		mutations: {
 			updateData(state, payload) {
@@ -13,8 +14,11 @@ function vueSetup() {
 					state[param] = payload[param]
 
 					if (state['stories'] && state['comments']) {
+
+						// once both modules and notes have been fetched, we match them
 						var stories = state['stories']
 						var comments = state['comments']
+
 						for (i in stories) {
 							var story = stories[i]
 
@@ -34,6 +38,12 @@ function vueSetup() {
 						}
 					}
 				}
+			},
+			openModal(state, payload) {
+				state['modal'] = payload
+			},
+			closeModal(state) {
+				state['modal'] = false
 			}
 		}
 	})
@@ -67,15 +77,25 @@ function vueSetup() {
 						<div v-for="comment in story['Commentaires']">
 							<div v-html="comment.Commentaire"></div>
 							<div v-if="comment.Illustrations" class="illustrations">
-								<a
+								<span
 									class="illustration"
 									v-for="illustration in comment.Illustrations"
-									:href="illustration.url" target='_story'
 									>
-									<img class="illustration__image" :src="illustration.thumbnails.small.url" />
-								</a>
+									<img
+										class="illustration__image"
+										:src="illustration.thumbnails.small.url"
+										v-on:click="openModal({'image': illustration.url })"
+										/>
+									<a :href="illustration.url" hidden>Voir</a>
+								</span>
 							</div>
 						</div>
+					</div>
+				</div>
+
+				<div class="modal__wrapper" v-bind:class="{ deployed: modal }">
+					<div v-if="modal" class="modal" v-on:click="closeModal()">
+						<img class="modal__image" v-if="modal.image" :src="modal.image" />
 					</div>
 				</div>
 
@@ -85,8 +105,21 @@ function vueSetup() {
 		computed: {
 			stories () {
 				return this.$store.state.stories
+			},
+			modal () {
+				return this.$store.state.modal
+			}
+		},
+
+		methods: {
+			openModal: function(payload) {
+				this.$store.commit('openModal', payload)
+			},
+			closeModal: function() {
+				this.$store.commit('closeModal')
 			}
 		}
+
 	})
 
 }
