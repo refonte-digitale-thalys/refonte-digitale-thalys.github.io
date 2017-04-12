@@ -21,10 +21,21 @@ body {
 
 .illustration__image {
 	max-width: 16rem; max-height: 16rem;
+	min-width: 2rem; min-height: 2rem;
 	border-radius: 4px;
 	margin: .5rem;
 	cursor: pointer;
+	transition: transform .25s;
 }
+
+.illustration__image:hover {
+	transform: rotate(1deg) translateY(-.1rem) translateX(.1rem);
+}
+
+.illustration__image:active {
+	transform: scale(1.1);
+}
+
 
 .light-text { font-style: italic; color: #999;	}
 .light { font-weight: normal; color: #999; font-size: .8em; }
@@ -66,6 +77,6 @@ blockquote {
 
 .modal__image {
 	max-width: 100%;
-	background-color: rgba(0,0,0,.5)
-	box-shadow: 3px 3px 5px 6px #ccc;
+	background-color: rgba(0,0,0,.5);
+	box-shadow: 0 0 1rem .25rem rgba(0,0,0,.35);
 }

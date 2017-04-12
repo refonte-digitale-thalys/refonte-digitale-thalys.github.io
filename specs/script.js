@@ -11,30 +11,39 @@ function vueSetup() {
 		mutations: {
 			updateData(state, payload) {
 				for (param in payload) {
+
 					state[param] = payload[param]
 
-					if (state['stories'] && state['comments']) {
+					var themes = state['themes']
+					var epics = state['epics']
+					var stories = state['stories']
+					var comments = state['comments']
 
-						// once both modules and notes have been fetched, we match them
-						var stories = state['stories']
-						var comments = state['comments']
+					if (themes && epics && stories && comments ) {
+
+						// all modules are loaded
 
 						for (i in stories) {
 							var story = stories[i]
-
+	
 							// Give a fake title to untitled stories
 							if (!story.Titre) story.Titre = "(Sans Titre)"
-
+	
 							// 
 							for (i in story['Commentaires']) {
 								// for each story note, replace the note ID by the full note data
-								console.log('reading comments for a story')
 								story['Commentaires'][i] = comments.filter(obj => obj.airTableId  == story['Commentaires'][i] )[0]
 								if (story['Commentaires'][i].hasOwnProperty('Commentaire')) {
 									story['Commentaires'][i]['Commentaire'] = marked(story['Commentaires'][i]['Commentaire'])
 								}
 							}
-
+						}
+	
+						for (i in epics) {
+							var epic = epics[i]
+							for (i in epic.stories) {
+								epic.stories[i] = stories.filter(obj => obj.airTableId  == epic.stories[i] )[0]
+							}
 						}
 					}
 				}
@@ -50,16 +59,75 @@ function vueSetup() {
 
 	var airTable = new getAirTable(apiKey='keyiXWAznJ80FXmtW', appKey='appguOHxX26IPEDZ9')
 
+	// Network Requests
+
 	Vue.http.get(airTable.ListEndpoint('User Stories')).then((response) => {
-		var stories = airTable.Clean(response.body.records)
-		store.commit('updateData', {'stories': stories})
-	})
+		var data = airTable.Clean(response.body.records)
+		store.commit('updateData', { 'stories': data })
+	}) 
 
 	Vue.http.get(airTable.ListEndpoint('Commentaires Backlog')).then((response) => {
-		var comments = airTable.Clean(response.body.records)
-		store.commit('updateData', {'comments': comments})
+		var data = airTable.Clean(response.body.records)
+		store.commit('updateData', { 'comments': data })
+	}) 
+
+	Vue.http.get(airTable.ListEndpoint('User Epics')).then((response) => {
+		var data = airTable.Clean(response.body.records)
+		store.commit('updateData', { 'epics': data })
+	}) 
+
+	Vue.http.get(airTable.ListEndpoint('User Themes')).then((response) => {
+		var data = airTable.Clean(response.body.records)
+		store.commit('updateData', { 'themes': data })
+	}) 
+
+
+	// Components
+
+
+	Vue.component('user-story', {
+		props: ['story'],
+		template : `
+			<div class="story">
+				<div class="story__container">
+					<h4>{{ story['Titre'] }}</h4>
+					<blockquote>
+						«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
+					</blockquote>
+					<div v-for="comment in story['Commentaires']">
+						<div v-html="comment.Commentaire"></div>
+						<div v-if="comment.Illustrations" class="illustrations">
+							<span
+								class="illustration"
+								v-for="illustration in comment.Illustrations"
+								>
+								<img
+									class="illustration__image"
+									:src="illustration.thumbnails.small.url"
+									v-on:click="openModal({'image': illustration.url })"
+									/>
+								<a :href="illustration.url" hidden>Voir</a>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			`
 	})
-	
+
+	Vue.component('user-epic', {
+		props: ['epic'],
+		template : `
+			<div class="epic">
+					<h3>{{ epic['Titre'] }}</h3>
+					<user-story v-for="story in epic.stories" v-if="!story.Hide" :story="story"></user-story>
+				</div>
+			</div>
+			`
+	})
+
+
+
 	// App
 	var app = new Vue({
 		el: '#app',
@@ -68,30 +136,7 @@ function vueSetup() {
 
 			<div id="app" class="stories" lang="fr">
 
-				<div class="story" v-for="story in stories" v-if="!story.Hide">
-					<div class="story__container">
-						<h4>{{ story['Titre'] }}</h4>
-						<blockquote>
-							«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
-						</blockquote>
-						<div v-for="comment in story['Commentaires']">
-							<div v-html="comment.Commentaire"></div>
-							<div v-if="comment.Illustrations" class="illustrations">
-								<span
-									class="illustration"
-									v-for="illustration in comment.Illustrations"
-									>
-									<img
-										class="illustration__image"
-										:src="illustration.thumbnails.small.url"
-										v-on:click="openModal({'image': illustration.url })"
-										/>
-									<a :href="illustration.url" hidden>Voir</a>
-								</span>
-							</div>
-						</div>
-					</div>
-				</div>
+				<user-epic v-for="epic in epics" v-if="!epic.Hide" :epic="epic"></user-epic>
 
 				<div class="modal__wrapper" v-bind:class="{ deployed: modal }">
 					<div v-if="modal" class="modal" v-on:click="closeModal()">
@@ -103,8 +148,8 @@ function vueSetup() {
 		
 		`,
 		computed: {
-			stories () {
-				return this.$store.state.stories
+			epics () {
+				return this.$store.state.epics
 			},
 			modal () {
 				return this.$store.state.modal
