@@ -11,41 +11,7 @@ function vueSetup() {
 		mutations: {
 			updateData(state, payload) {
 				for (param in payload) {
-
 					state[param] = payload[param]
-
-					var themes = state['themes']
-					var epics = state['epics']
-					var stories = state['stories']
-					var comments = state['comments']
-
-					if (themes && epics && stories && comments ) {
-
-						// all modules are loaded
-
-						for (i in stories) {
-							var story = stories[i]
-	
-							// Give a fake title to untitled stories
-							if (!story.Titre) story.Titre = "(Sans Titre)"
-	
-							// 
-							for (i in story['Commentaires']) {
-								// for each story note, replace the note ID by the full note data
-								story['Commentaires'][i] = comments.filter(obj => obj.airTableId  == story['Commentaires'][i] )[0]
-								if (story['Commentaires'][i].hasOwnProperty('Commentaire')) {
-									story['Commentaires'][i]['Commentaire'] = marked(story['Commentaires'][i]['Commentaire'])
-								}
-							}
-						}
-	
-						for (i in epics) {
-							var epic = epics[i]
-							for (i in epic.stories) {
-								epic.stories[i] = stories.filter(obj => obj.airTableId  == epic.stories[i] )[0]
-							}
-						}
-					}
 				}
 			},
 			openModal(state, payload) {
@@ -89,26 +55,24 @@ function vueSetup() {
 		props: ['story'],
 		template : `
 			<div class="story">
-				<div class="story__container">
-					<h4>{{ story['Titre'] }}</h4>
-					<blockquote>
-						«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
-					</blockquote>
-					<div v-for="comment in story['Commentaires']">
-						<div v-html="comment.Commentaire"></div>
-						<div v-if="comment.Illustrations" class="illustrations">
-							<span
-								class="illustration"
-								v-for="illustration in comment.Illustrations"
-								>
-								<img
-									class="illustration__image"
-									:src="illustration.thumbnails.small.url"
-									v-on:click="openModal({'image': illustration.url })"
-									/>
-								<a :href="illustration.url" hidden>Voir</a>
-							</span>
-						</div>
+				<h4 class="story__title">{{ story['Titre'] }}</h4>
+				<blockquote>
+					«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
+				</blockquote>
+				<div v-for="comment in story['Commentaires']">
+					<div v-html="comment.Commentaire"></div>
+					<div v-if="comment.Illustrations" class="illustrations">
+						<span
+							class="illustration"
+							v-for="illustration in comment.Illustrations"
+							>
+							<img
+								class="illustration__image"
+								:src="illustration.thumbnails.small.url"
+								v-on:click="openModal({'image': illustration.url })"
+								/>
+							<a :href="illustration.url" hidden>Voir</a>
+						</span>
 					</div>
 				</div>
 			</div>
@@ -116,11 +80,41 @@ function vueSetup() {
 	})
 
 	Vue.component('user-epic', {
-		props: ['epic'],
+		props: ['epic', 'stories'],
 		template : `
 			<div class="epic">
-					<h3>{{ epic['Titre'] }}</h3>
-					<user-story v-for="story in epic.stories" v-if="!story.Hide" :story="story"></user-story>
+				<h3 class="epic__title">{{ epic['Titre'] }}</h3>
+				<user-story
+					v-for="storyId in epic['User Stories']"
+					v-if="!stories[storyId].Hide"
+					:story="stories[storyId]"
+					></user-story>
+			</div>
+			`
+	})
+
+	Vue.component('user-theme', {
+		props: ['theme', 'epics', 'stories'],
+		template : `
+			<div class="theme">
+				<h2 class="theme__title">{{ theme['Titre'] }}</h2>
+				<p>{{ theme['Story']}}</p>
+				<user-epic
+					v-for="epicId in theme['User Epics']"
+					v-if="!epics[epicId].Hide"
+					:epic="epics[epicId]"
+					></user-epic>
+				<iv>
+			</div>
+			`
+	})
+
+	Vue.component('popin-modal', {
+		props: ['modal'],
+		template : `
+			<div class="modal__wrapper" v-bind:class="{ deployed: modal }">
+				<div v-if="modal" class="modal" v-on:click="closeModal()">
+					<img class="modal__image" v-if="modal.image" :src="modal.image" />
 				</div>
 			</div>
 			`
@@ -134,23 +128,27 @@ function vueSetup() {
 		store,
 		template: `
 
-			<div id="app" class="stories" lang="fr">
+			<div id="app" lang="fr">
 
-				<user-epic v-for="epic in epics" v-if="!epic.Hide" :epic="epic"></user-epic>
+				<h1>Les parcours de la Refonte Digitale</h1>
 
-				<div class="modal__wrapper" v-bind:class="{ deployed: modal }">
-					<div v-if="modal" class="modal" v-on:click="closeModal()">
-						<img class="modal__image" v-if="modal.image" :src="modal.image" />
-					</div>
-				</div>
+				<user-theme
+					v-for="theme in state.themes"
+					v-if="!theme.Hide"
+					:theme="theme"
+					:epics="state.epics"
+					:stories="state.stories"
+					></user-theme>
+
+				<popin-modal
+					:modal="state.modal"
+					></popin-modal>
 
 			</div>
 		
 		`,
 		computed: {
-			epics () {
-				return this.$store.state.epics
-			},
+			state() { return this.$store.state },
 			modal () {
 				return this.$store.state.modal
 			}
