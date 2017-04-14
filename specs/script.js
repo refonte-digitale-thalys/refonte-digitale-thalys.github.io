@@ -98,13 +98,12 @@ function vueSetup() {
 		template : `
 			<div class="theme">
 				<h2 class="theme__title">{{ theme['Titre'] }}</h2>
-				<p>{{ theme['Story']}}</p>
+				<p v-if="theme['Story']">{{ theme['Story']}}</p>
 				<user-epic
 					v-for="epicId in theme['User Epics']"
 					v-if="!epics[epicId].Hide"
 					:epic="epics[epicId]"
 					></user-epic>
-				<iv>
 			</div>
 			`
 	})
