@@ -40,7 +40,6 @@ function getAirTable(apiKey, appKey) {
 		for (i in array) {
 			var item = array[i]
 			object[item.airTableId] = item
-			delete item.airTableId
 		}
 		return object
 	}

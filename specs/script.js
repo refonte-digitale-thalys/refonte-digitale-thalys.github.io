@@ -54,12 +54,12 @@ function vueSetup() {
 	Vue.component('user-story', {
 		props: ['story'],
 		template : `
-			<div class="story">
+			<div class="story" v-if="!story.Hide">
 				<h4 class="story__title">{{ story['Titre'] }}</h4>
 				<blockquote>
 					«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
 				</blockquote>
-				<div v-for="comment in story['Commentaires']">
+				<div v-for="comment in story['Commentaires']" key="comment.airTableId">
 					<div v-html="comment.Commentaire"></div>
 					<div v-if="comment.Illustrations" class="illustrations">
 						<span
@@ -82,11 +82,12 @@ function vueSetup() {
 	Vue.component('user-epic', {
 		props: ['epic', 'stories'],
 		template : `
-			<div class="epic">
+			<div class="epic" v-if="!epic.Hide">
 				<h3 class="epic__title">{{ epic['Titre'] }}</h3>
 				<user-story
 					v-for="storyId in epic['User Stories']"
-					v-if="!stories[storyId].Hide"
+					key="storyId"
+					v-if="stories.hasOwnProperty(storyId)"
 					:story="stories[storyId]"
 					></user-story>
 			</div>
@@ -96,13 +97,15 @@ function vueSetup() {
 	Vue.component('user-theme', {
 		props: ['theme', 'epics', 'stories'],
 		template : `
-			<div class="theme">
+			<div class="theme" v-if="!theme.Hide">
 				<h2 class="theme__title">{{ theme['Titre'] }}</h2>
 				<p v-if="theme['Story']">{{ theme['Story']}}</p>
 				<user-epic
 					v-for="epicId in theme['User Epics']"
-					v-if="!epics[epicId].Hide"
+					key="epicId"
+					v-if="epics.hasOwnProperty(epicId)"
 					:epic="epics[epicId]"
+					:stories="stories"
 					></user-epic>
 			</div>
 			`
@@ -133,7 +136,7 @@ function vueSetup() {
 
 				<user-theme
 					v-for="theme in state.themes"
-					v-if="!theme.Hide"
+					key="theme.airTableId"
 					:theme="theme"
 					:epics="state.epics"
 					:stories="state.stories"
