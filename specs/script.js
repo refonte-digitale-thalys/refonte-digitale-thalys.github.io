@@ -50,37 +50,51 @@ function vueSetup() {
 
 	// Components
 
+	Vue.component('story-detail', {
+		props: ['comment'],
+		template : `
+			<div class="story__detail">
+				<div v-html="marked(comment.Commentaire)" class="story__detail__text"></div>
+				<div v-if="comment.Illustrations" class="story__detail__illustrations illustrations">
+					<span
+						class="illustration"
+						v-for="illustration in comment.Illustrations"
+						>
+						<img
+							class="illustration__image"
+							:src="illustration.thumbnails.small.url"
+							v-on:click="openModal({'image': illustration.url })"
+							/>
+						<a :href="illustration.url" hidden>Voir</a>
+					</span>
+				</div>
+			</div>
+		`,
+		computed: {
+			marked() { return window.marked }
+		}
+	})
 
 	Vue.component('user-story', {
-		props: ['story'],
+		props: ['story', 'comments'],
 		template : `
 			<div class="story" v-if="!story.Hide">
 				<h4 class="story__title">{{ story['Titre'] }}</h4>
-				<blockquote>
+				<blockquote class="story__quote">
 					«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
 				</blockquote>
-				<div v-for="comment in story['Commentaires']" key="comment.airTableId">
-					<div v-html="comment.Commentaire"></div>
-					<div v-if="comment.Illustrations" class="illustrations">
-						<span
-							class="illustration"
-							v-for="illustration in comment.Illustrations"
-							>
-							<img
-								class="illustration__image"
-								:src="illustration.thumbnails.small.url"
-								v-on:click="openModal({'image': illustration.url })"
-								/>
-							<a :href="illustration.url" hidden>Voir</a>
-						</span>
-					</div>
-				</div>
+				<story-detail
+					v-for="commentId in story['Commentaires']"
+					key="commentId" 
+					v-if="comments.hasOwnProperty(commentId)"
+					:comment="comments[commentId]"
+					></story-detail>
 			</div>
 			`
 	})
 
 	Vue.component('user-epic', {
-		props: ['epic', 'stories'],
+		props: ['epic', 'stories', 'comments'],
 		template : `
 			<div class="epic" v-if="!epic.Hide">
 				<h3 class="epic__title">{{ epic['Titre'] }}</h3>
@@ -89,13 +103,14 @@ function vueSetup() {
 					key="storyId"
 					v-if="stories.hasOwnProperty(storyId)"
 					:story="stories[storyId]"
+					:comments="comments"
 					></user-story>
 			</div>
 			`
 	})
 
 	Vue.component('user-theme', {
-		props: ['theme', 'epics', 'stories'],
+		props: ['theme', 'epics', 'stories', 'comments'],
 		template : `
 			<div class="theme" v-if="!theme.Hide">
 				<h2 class="theme__title">{{ theme['Titre'] }}</h2>
@@ -106,6 +121,7 @@ function vueSetup() {
 					v-if="epics.hasOwnProperty(epicId)"
 					:epic="epics[epicId]"
 					:stories="stories"
+					:comments="comments"
 					></user-epic>
 			</div>
 			`
@@ -140,6 +156,7 @@ function vueSetup() {
 					:theme="theme"
 					:epics="state.epics"
 					:stories="state.stories"
+					:comments="state.comments"
 					></user-theme>
 
 				<popin-modal
