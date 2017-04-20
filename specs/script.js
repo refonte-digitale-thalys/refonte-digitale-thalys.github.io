@@ -72,6 +72,11 @@ function vueSetup() {
 		`,
 		computed: {
 			marked() { return window.marked }
+		},
+		methods: {
+			openModal: function(payload) {
+				this.$store.commit('openModal', payload)
+			}
 		}
 	})
 
@@ -135,7 +140,12 @@ function vueSetup() {
 					<img class="modal__image" v-if="modal.image" :src="modal.image" />
 				</div>
 			</div>
-			`
+			`,
+		methods: {
+			closeModal: function() {
+				this.$store.commit('closeModal')
+			}
+		}
 	})
 
 
@@ -170,15 +180,6 @@ function vueSetup() {
 			state() { return this.$store.state },
 			modal () {
 				return this.$store.state.modal
-			}
-		},
-
-		methods: {
-			openModal: function(payload) {
-				this.$store.commit('openModal', payload)
-			},
-			closeModal: function() {
-				this.$store.commit('closeModal')
 			}
 		}
 
