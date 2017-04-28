@@ -19,6 +19,10 @@ function vueSetup() {
 			},
 			closeModal(state) {
 				state['modal'] = false
+			},
+			toggleStory(state, story) {
+				if (story.expanded) state.stories[story.airTableId].expanded = false
+				else state.stories[story.airTableId].expanded = true
 			}
 		}
 	})
@@ -83,19 +87,63 @@ function vueSetup() {
 	Vue.component('user-story', {
 		props: ['story', 'comments'],
 		template : `
-			<div class="story" v-if="!story.Hide">
-				<h4 class="story__title">{{ story['Titre'] }}</h4>
-				<blockquote class="story__quote">
-					«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
-				</blockquote>
-				<story-detail
-					v-for="commentId in story['Commentaires']"
-					key="commentId" 
-					v-if="comments.hasOwnProperty(commentId)"
-					:comment="comments[commentId]"
-					></story-detail>
+			<div v-if="!story.Hide">
+				<div v-if="story.expanded" class="story story--expanded">
+					<h4 class="story__title">#{{ story['ID']}} {{ story['Titre'] }}</h4>
+					<table>
+						<tr>
+							<th colspan=2>Environnement</th>
+							<th colspan=4>Langues</th>
+							<th colspan=6>Scope</th>
+						</tr>
+						<tr>
+							<td colspan=2>thalys.com</td>
+							<td colspan=1>FR</td>
+							<td colspan=1>DE</td>
+							<td colspan=1>EN</td>
+							<td colspan=1>NL</td>
+							<td colspan=2>mobile</td>
+							<td colspan=2>tablette</td>
+							<td colspan=2>desktop</td>
+						</tr>
+						<tr>
+							<td colspan=12 class="table-separator"></td>
+						</tr>
+						<tr>
+							<th colspan=3>Owner</th>
+							<th colspan=3>Statut</th>
+							<th colspan=3>Valeur</th>
+							<th colspan=3>Complexité</th>
+						</tr>
+						<tr>
+							<td colspan=3>Antonin</td>
+							<td colspan=3>{{ story['Statut'] }}</td>
+							<td colspan=3>{{ story['Valeur'] }}</td>
+							<td colspan=3>{{ story['Complexité'] }}</td>
+						</tr>
+					</table>
+					<blockquote class="story__quote">
+						«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
+					</blockquote>
+					<story-detail
+						v-for="commentId in story['Commentaires']"
+						key="commentId" 
+						v-if="comments.hasOwnProperty(commentId)"
+						:comment="comments[commentId]"
+						></story-detail>
+				</div>
+				<div v-else class="story story--retracted" v-on:click="toggleStory(story)">
+					#{{ story['ID']}} {{ story['Titre'] }}
+				</div>
 			</div>
-			`
+			`,
+		methods: {
+			toggleStory: function(story) {
+				story = this.$store.state.stories[story.airTableId]
+				this.$store.commit('toggleStory', story)
+				console.log(story.expanded)
+			}
+		}
 	})
 
 	Vue.component('user-epic', {
@@ -109,6 +157,7 @@ function vueSetup() {
 					v-if="stories.hasOwnProperty(storyId)"
 					:story="stories[storyId]"
 					:comments="comments"
+					:expanded="false"
 					></user-story>
 			</div>
 			`
