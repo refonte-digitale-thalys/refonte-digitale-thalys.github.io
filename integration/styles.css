@@ -47,8 +47,23 @@ nav {
 
 footer { margin-top: 2rem; }
 .footer-newsletter-bar { background-color: #BF2235; }
-.footer-newsletter-bar img { padding: 1.2500rem; width: calc(100% - 2.5rem); }
+.footer-newsletter-bar .newsletter-bar-image { padding: 1.2500rem; width: calc(100% - 2.5rem); }
 .footer-multilinks { background-color: #F2F2F2; height: 26rem; }
+
+
+
+/* Show the newsletter image based on screen size */
+.newsletter-bar-image--desktop { display: none; }
+@media (max-width: 575px) { 
+	.newsletter-bar-image--desktop {  display: block; }
+	.newsletter-bar-image--mobile {  display: none; }
+}
+
+
+
+
+
+/* Base elements */
 
 h1, h2, h3, h4, h5, h6 { }
 
