@@ -39,14 +39,16 @@ nav {
 	background-position: center;
 }
 
-.header { padding: 1.8750rem 1.2500rem; }
+.header { padding: 1.8750rem 1.2500rem; text-shadow: 0 0 5px black; }
 .header__chemin-de-fer { font-size: .85rem; margin: 0;}
 .header__titre-de-la-page { margin: 0; }
-.header__texte-introductif { font-size: 1.25rem; margin: 0;}
+.header__texte-introductif { font-size: 1.25rem; margin: 0; }
 .page-top::after { display: block; content: ''; height: 8rem; margin-bottom: -8rem; }
 
-
-
+footer { margin-top: 2rem; }
+.footer-newsletter-bar { background-color: #BF2235; }
+.footer-newsletter-bar img { padding: 1.2500rem; width: calc(100% - 2.5rem); }
+.footer-multilinks { background-color: #F2F2F2; height: 26rem; }
 
 h1, h2, h3, h4, h5, h6 { }
 
