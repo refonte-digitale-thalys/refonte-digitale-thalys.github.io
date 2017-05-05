@@ -18,10 +18,6 @@ function vueSetup() {
 			},
 			closeModal(state) {
 				state['modal'] = false
-			},
-			toggleStory(state, story) {
-				if (story.expanded) state.stories[story.airTableId].expanded = false
-				else state.stories[story.airTableId].expanded = true
 			}
 		}
 	})
@@ -30,9 +26,16 @@ function vueSetup() {
 
 	// Network Requests
 
+	console.log(airTable.ListEndpoint('User Stories'))
+
 	Vue.http.get(airTable.ListEndpoint('User Stories')).then((response) => {
 		var data = airTable.Clean(response.body.records)
-		store.commit('updateData', { 'stories': data })
+		// more than 100 results, so needs offset
+		Vue.http.get(airTable.ListEndpoint('User Stories')+'&offset='+response.body.offset).then((response) => {
+			var offsetData = airTable.Clean(response.body.records)
+			Object.assign(data, offsetData) // merges the data of both requests
+			store.commit('updateData', { 'stories': data })
+		})
 	}) 
 
 	Vue.http.get(airTable.ListEndpoint('User Epics')).then((response) => {
@@ -51,60 +54,62 @@ function vueSetup() {
 	Vue.component('user-story', {
 		props: ['story'],
 		template : `
-			<div v-if="!story.Hide">
-				<div v-if="story.expanded" class="story story--expanded">
-					<h4 class="story__title">#{{ story['ID']}} {{ story['Titre'] }}</h4>
-					<table>
-						<tr>
-							<th colspan=2>Environnement</th>
-							<th colspan=4>Langues</th>
-							<th colspan=6>Scope</th>
-						</tr>
-						<tr>
-							<td colspan=2>thalys.com</td>
-							<td colspan=1>FR</td>
-							<td colspan=1>DE</td>
-							<td colspan=1>EN</td>
-							<td colspan=1>NL</td>
-							<td colspan=2>mobile</td>
-							<td colspan=2>tablette</td>
-							<td colspan=2>desktop</td>
-						</tr>
-						<tr>
-							<td colspan=12 class="table-separator"></td>
-						</tr>
-						<tr>
-							<th colspan=3>Owner</th>
-							<th colspan=3>Statut</th>
-							<th colspan=3>Valeur</th>
-							<th colspan=3>Complexité</th>
-						</tr>
-						<tr>
-							<td colspan=3>Antonin</td>
-							<td colspan=3>{{ story['Statut'] }}</td>
-							<td colspan=3>{{ story['Valeur'] }}</td>
-							<td colspan=3>{{ story['Complexité'] }}</td>
-						</tr>
-					</table>
-					<blockquote class="story__quote">
-						«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
-					</blockquote>
-					<div v-html="marked(story['Présentation'])" class="story__detail__text"></div>
-					<div v-if="story.Illustrations" class="story__detail__illustrations illustrations">
-						<span
-							class="illustration"
-							v-for="illustration in story['Illustrations']"
-							>
-							<img
-								class="illustration__image"
-								:src="illustration.thumbnails.small.url"
-								v-on:click="openModal({'image': illustration.url })"
-								/>
-							<a :href="illustration.url" hidden>Voir</a>
-						</span>
-					</div>
+			<div v-if="!story.Hide" class="story story--expanded">
+				<br/><h4 class="story__title">#{{ story['ID']}} {{ story['Titre'] }}</h4>
+				<table>
+					<tr hidden>
+						<th colspan=2>Environnement</th>
+						<th colspan=4>Langues</th>
+						<th colspan=6>Scope</th>
+					</tr>
+					<tr hidden>
+						<td colspan=2>thalys.com</td>
+						<td colspan=1>FR</td>
+						<td colspan=1>DE</td>
+						<td colspan=1>EN</td>
+						<td colspan=1>NL</td>
+						<td colspan=2>mobile</td>
+						<td colspan=2>tablette</td>
+						<td colspan=2>desktop</td>
+					</tr>
+					<tr hidden>
+						<td colspan=12 class="table-separator"></td>
+					</tr>
+					<tr>
+						<th colspan=6>Owner</th>
+						<th colspan=6>Statut</th>
+						<th hidden colspan=3>Valeur</th>
+						<th hidden colspan=3>Complexité</th>
+					</tr>
+					<tr class="center">
+						<td colspan=6>Antonin</td>
+						<td colspan=6>{{ story['Statut'] }}</td>
+						<td hidden colspan=3>{{ story['Valeur'] }}</td>
+						<td hidden colspan=3>{{ story['Complexité'] }}</td>
+					</tr>
+					<tr>
+						<td colspan=12 class="borderless">
+							<blockquote class="story__quote">
+								«En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}.»
+							</blockquote>
+						</td>
+					</tr>
+				</table>
+				<div hidden v-if="story['Présentation']" v-html="marked(story['Présentation'])" class="story__detail__text"></div>
+				<div v-if="story.Illustrations" class="story__detail__illustrations illustrations">
+					<span
+						class="illustration"
+						v-for="illustration in story['Illustrations']"
+						>
+						<img
+							class="illustration__image"
+							:src="illustration.thumbnails.small.url"
+							v-on:click="openModal({'image': illustration.url })"
+							/>
+						<a :href="illustration.url" hidden>Voir</a>
+					</span>
 				</div>
-				<div v-else class="story story--retracted" v-on:click="toggleStory(story)">
+				<div class="story story--retracted">
 					#{{ story['ID']}} {{ story['Titre'] }}
 				</div>
 			</div>
@@ -119,7 +124,7 @@ function vueSetup() {
 			toggleStory: function(story) {
 				story = this.$store.state.stories[story.airTableId]
 				this.$store.commit('toggleStory', story)
-				console.log(story.expanded)
+				console.log(story['Expanded'])
 			}
 		}
 	})
@@ -135,6 +140,7 @@ function vueSetup() {
 					v-if="stories.hasOwnProperty(storyId)"
 					:story="stories[storyId]"
 					></user-story>
+				<br/>
 			</div>
 			`
 	})
@@ -144,7 +150,7 @@ function vueSetup() {
 		template : `
 			<div class="theme" v-if="!theme.Hide">
 				<h2 class="theme__title">{{ theme['Titre'] }}</h2>
-				<p v-if="theme['Story']">{{ theme['Story']}}</p>
+				<p hidden v-if="theme['Story']">{{ theme['Story']}}</p>
 				<user-epic
 					v-for="epicId in theme['User Epics']"
 					key="epicId"
@@ -152,6 +158,7 @@ function vueSetup() {
 					:epic="epics[epicId]"
 					:stories="stories"
 					></user-epic>
+				<br/>
 			</div>
 			`
 	})
@@ -184,6 +191,8 @@ function vueSetup() {
 
 				<h1>Les parcours de la Refonte Digitale</h1>
 
+				<p>Les spécifications fonctionnelles de la Refonte Digitale sont définies au format de 'User Stories', correspondant chacune à une fonctionnalité accessible aux utilisateurs.</p>
+
 				<user-theme
 					v-for="theme in state.themes"
 					key="theme.airTableId"
@@ -201,11 +210,10 @@ function vueSetup() {
 		`,
 		computed: {
 			state() { return this.$store.state },
-			modal () {
-				return this.$store.state.modal
-			}
-		}
-
+			modal () { return this.$store.state.modal }
+		},
 	})
 
 }
+
+// document.getElementById("app").className += " print-mode";
