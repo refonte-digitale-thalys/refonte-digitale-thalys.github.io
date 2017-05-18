@@ -29,16 +29,26 @@ function vueSetup() {
 	Vue.http.get(airTable.ListEndpoint('User Stories')).then((response) => {
 		var data = airTable.Clean(response.body.records)
 		// more than 100 results, so needs offset
-		Vue.http.get(airTable.ListEndpoint('User Stories')+'&offset='+response.body.offset).then((response) => {
-			var offsetData = airTable.Clean(response.body.records)
-			Object.assign(data, offsetData) // merges the data of both requests
-			store.commit('updateData', { 'stories': data })
-		})
+		if (response.body.offset) {
+			Vue.http.get(airTable.ListEndpoint('User Stories')+'&offset='+response.body.offset).then((response) => {
+				var offsetData = airTable.Clean(response.body.records)
+				if (response.body.offset) console.error('Stories beyond 200th could not be fetched.')	
+				Object.assign(data, offsetData) // merges the data of both requests
+				store.commit('updateData', { 'stories': data })
+			})
+		}
 	}) 
 
 	Vue.http.get(airTable.ListEndpoint('User Epics')).then((response) => {
 		var data = airTable.Clean(response.body.records)
-		store.commit('updateData', { 'epics': data })
+		if (response.body.offset) {
+			Vue.http.get(airTable.ListEndpoint('User Epics')+'&offset='+response.body.offset).then((response) => {
+				if (response.body.offset) console.error('Epics beyond 200th could not be fetched.')	
+				var offsetData = airTable.Clean(response.body.records)
+				Object.assign(data, offsetData) // merges the data of both requests
+				store.commit('updateData', { 'epics': data })
+			})
+		}
 	}) 
 
 	Vue.http.get(airTable.ListEndpoint('User Themes')).then((response) => {
@@ -99,10 +109,10 @@ function vueSetup() {
 								« En tant que "{{ story['En tant que'] }}", je veux {{ story['Je veux'] }}<span v-if="story['Pourquoi']">, </span>{{ story['Pourquoi'] }}. »
 							</div>
 							<div class="story__detail__text">
-								<span v-if="story['Présentation']" v-html="marked(story['Présentation'])"></span>
+								<!--<span v-if="story['Présentation']" v-html="marked(story['Présentation'])"></span>-->
 							</div>
 							<div v-if="story.Illustrations" class="story__detail__illustrations illustrations">
-								<span
+								<!--<span
 									class="illustration"
 									v-for="illustration in story['Illustrations']"
 									>
@@ -112,7 +122,7 @@ function vueSetup() {
 										v-on:click="openModal({'image': illustration.url })"
 										/>
 									<a :href="illustration.url" hidden>Voir</a>
-								</span>
+								</span>-->
 							</div>
 						</td>
 					</tr>
@@ -125,8 +135,8 @@ function vueSetup() {
 					</tr>
 					<tr>
 						<td colspan=12>
-							<div class="story__happy-flow">
-								<span v-if="story['Happy Flow']" v-html="marked(story['Happy Flow'])"></span>
+							<div class="story__happy_flow">
+								<!--<span v-if="story['Happy Flow']" v-html="marked(story['Happy Flow'])"></span>-->
 							</div>
 						</td>
 					</tr>
@@ -139,7 +149,8 @@ function vueSetup() {
 					</tr>
 					<tr>
 						<td colspan=12>
-							<div class="story__business-rules">
+							<div class="story__business_rules">
+								<!--<span v-if="story['Règles de Gestion']" v-html="marked(story['Règles de Gestion'])"></span>-->
 							</div>
 						</td>
 					</tr>
@@ -153,7 +164,7 @@ function vueSetup() {
 					<tr>
 						<td colspan=12>
 							<div class="story__analyse_technique__texte">
-								<span v-if="story['Analyse Technique']" v-html="marked(story['Analyse Technique'])"></span>
+								<!--<span v-if="story['Analyse Technique']" v-html="marked(story['Analyse Technique'])"></span>
 							</div>
 							<div v-if="story['Schémas']" class="story__analyse_technique__illustrations illustrations">
 								<span
@@ -165,7 +176,7 @@ function vueSetup() {
 										:src="illustration.thumbnails.small.url"
 										v-on:click="openModal({'image': illustration.url })"
 										/>
-								</span>
+								</span>-->
 							</div>
 						</td>
 					</tr>
@@ -211,7 +222,7 @@ function vueSetup() {
 		template : `
 			<div class="theme" v-if="!theme.Hide">
 				<h2 class="theme__title">{{ theme['Titre'] }}</h2>
-				<p hidden v-if="theme['Story']">{{ theme['Story']}}</p>
+				<!--<p hidden v-if="theme['Story']">{{ theme['Story']}}</p>-->
 				<user-epic
 					v-for="epicId in theme['User Epics']"
 					key="epicId"
@@ -253,6 +264,14 @@ function vueSetup() {
 				<h1>Les parcours de la Refonte Digitale</h1>
 
 				<p>Les spécifications fonctionnelles de la Refonte Digitale sont définies au format de 'User Stories', correspondant chacune à une fonctionnalité accessible aux utilisateurs.</p>
+
+				<!--<p>
+0	Besoin à l'étude
+1a	Règles en cours de rédaction
+2	En attente de revue DSI
+1b	Précisions PO nécessaires
+OK	User Story validée
+				</p>-->
 
 				<user-theme
 					v-for="theme in state.themes"

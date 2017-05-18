@@ -5,10 +5,10 @@ body {
 	line-height: 1.625;
 }
 
-#app { max-width: 48rem; margin: auto; }
+#app { max-width: 54rem; margin: auto; }
 
 h1 { }
-table h4 { margin: 0; }
+table h5 { margin: 0; }
 
 *[colspan="1"] { width:  8%; }
 *[colspan="2"] { width: 16%; }
@@ -24,8 +24,9 @@ table h4 { margin: 0; }
 
 .story:not(:last-child) { border-bottom: 1px solid #eee; }
 
-.story { border: 1px solid #eee; border-radius: 4px; padding: 1rem 2rem; box-shadow: 0 0 .5rem rgba(0,0,0,.1); page-break-after: always; }
+.story { border: 1px solid #eee; border-radius: 4px; padding: 1rem 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); page-break-after: always; }
 .story + .story { margin-top: 1rem; }
+.epic + .epic { margin-top: 2rem; }
 
 .theme__title, .epic__title, .story__title { margin-top: 0; }
 
@@ -41,6 +42,7 @@ table h4 { margin: 0; }
 	font-family: Georgia, Times, "Times New Roman", serif;
 	font-style: italic;
 	font-size: 1.25rem;
+	line-height: 1.25;
 }
 
 
