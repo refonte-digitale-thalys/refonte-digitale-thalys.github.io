@@ -111,6 +111,10 @@ function vueSetup() {
 
 				<p style="margin-top: 2rem;">Testez les combinaisons pour voir le résultat d'affichage :</p>
 
+				<results-dashboard
+					:results="state.results"
+					></results-dashboard>
+
 				<hr class="large"/>
 
 				<form>
@@ -161,6 +165,8 @@ function vueSetup() {
 						:input="state.cookieCountry"
 						></country-selector>
 
+					<hr/>
+
 					<h4>Navigateur</h4>
 					<language-selector
 						:input="state.browserLanguage"
@@ -173,16 +179,7 @@ function vueSetup() {
 						:input="state.ipCountry"
 						></country-selector>
 
-					<hr/>
-
 				</form>
-
-				<hr class="large"/>
-
-				<h3>Résultat</h3>
-				<results-dashboard
-					:results="state.results"
-					></results-dashboard>
 
 			</div>
 		
@@ -383,12 +380,12 @@ function evaluateResults(state) {
 			// only compatible with one market, so it's easier
 			market = 'DE'
 			console.log(yell(market, 'language'))
-			if (
-				(c.url.value && c.urlCountry.value != 'DE') &&
-				(c.account.value && c.accountCountry.value != 'DE') &&
-				(c.cookie.value && c.cookieCountry.value != 'DE') &&
+			var test = (c.url.value && c.urlCountry.value != 'DE') ||
+				(c.account.value && c.accountCountry.value != 'DE')||
+				(c.cookie.value && c.cookieCountry.value != 'DE') ||
 				(c.ipCountry.value != 'DE')
-				) {
+			console.log('Test result is ' + test)
+			if (test) {
 				// if no parameters hint to the DE market, let's ask the question anyway
 				message = justPickSomethingAlready(language, market)
 			} 
