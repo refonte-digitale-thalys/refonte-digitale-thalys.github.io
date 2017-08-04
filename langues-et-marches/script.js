@@ -31,6 +31,7 @@ function vueSetup() {
 	})
 
 
+
 	// Components
 
 	Vue.component('results-dashboard', {
@@ -213,12 +214,14 @@ function changeAccountLanguageMessage(displayLanguage, suggestedLanguage) {
 	}
 }
 
-function viewingFromOtherCountry(language, displayCountry, otherCountry) {
-	return 'potato'
-}
-
 function justPickSomethingAlready(language, market) {
-	return 'potato'
+	var country = countryNameByLanguage(market, language)
+	switch (language) {
+		case 'fr': return 'Cette page est affichée en français pour un départ ' + country + '. [Changer](#)'
+		case 'en': return 'This page is displayed in english for ' + country + '. [Change](#)'
+		case 'nl': return 'Deze pagina wordt in het Nederlands voor ' + country + ' weergegeven. [Wijziger](#)'
+		case 'de': return 'Diese Seite wird in deutscher Sprache für ' + country + 'angezeigt. [Wechsler](#)'
+	}
 }
 
 function languageNameInOtherLanguage(displayLanguage, otherLanguage) {
@@ -248,29 +251,70 @@ function languageNameInOtherLanguage(displayLanguage, otherLanguage) {
 	return "Error in function languageNameInOtherLanguage with input " + displayLanguage + " and " + otherLanguage + "."
 }
 
+function countryNameByLanguage(country, language) {
+	switch (language) {
+		case 'fr': switch (country) {
+			case 'FR': return 'de France'
+			case 'BE': return 'de Belgique'
+			case 'NL': return 'des Pays-Bas'
+			case 'DE': return 'd\'Allemagne'
+		}
+		case 'en': switch (country) {
+			case 'FR': return 'France'
+			case 'BE': return 'Belgium'
+			case 'NL': return 'the Netherlands'
+			case 'DE': return 'Germany'
+		}
+		case 'nl': switch (country) {
+			case 'FR': return 'Frankrijk'
+			case 'BE': return 'België'
+			case 'NL': return 'Nederland'
+			case 'DE': return 'Duitsland'
+		}
+		case 'de': switch (country) {
+			case 'FR': return 'Frankreich'
+			case 'BE': return 'Belgien'
+			case 'NL': return 'Niederlande'
+			case 'DE': return 'Deutschland'
+		}
+	// If that didn't work, there is something wrong with the input
+	console.error("Error in function countryNameByLanguage with input " + country + " and " + language + ".")
+	return '[error]'
+	}
+}
+
+function yell(market, cause) {
+	return 'Market set to ' + market + ' by ' + cause
+}
+
+function isInArray(country, markets) {
+	return markets.indexOf(country) > -1
+}
+
 function evaluateResults(state) {
 	var c = state
-	var language = 'erreur'
-	var market = 'erreur'
+	var language = 'default'
+	var market = 'DEFAULT'
+	console.log(yell(market, 'default'))
 	var message = false
-	if (c.url) {
+	if (c.url.value) {
 		language = c.urlLanguage.value
-		if (c.account) {
+		if (c.account.value) {
 			if (c.accountLanguage.value != language) {
 				message = alternatePageLanguageMessage(language, c.accountLanguage.value)
 			}
-		} else if (c.cookie) {
+		} else if (c.cookie.value) {
 			if (c.cookieLanguage.value != language) {
 				message = alternatePageLanguageMessage(language, c.cookieLanguage.value)
 			}
-		} else if (c.browserLanguage) {
+		} else if (c.browserLanguage.value) {
 			if (c.browserLanguage.value != language) {
 				message = alternatePageLanguageMessage(language, c.browserLanguage.value)
 			}
 		}
-	} else if (c.account) {
+	} else if (c.account.value) {
 		language = c.accountLanguage.value
-		if (c.cookie) {
+		if (c.cookie.value) {
 			if (c.cookieLanguage.value != language) {
 				message = changeAccountLanguageMessage(language, c.cookieLanguage.value)
 			}
@@ -279,35 +323,105 @@ function evaluateResults(state) {
 				message = changeAccountLanguageMessage(language, c.browserLanguage.value)
 			}
 		}
-	} else if (c.cookie) {
+	} else if (c.cookie.value) {
 		language = c.cookieLanguage.value
-	} else if (c.browserLanguage) {
+	} else if (c.browserLanguage.value) {
 		language = c.browserLanguage.value
 	}
 
+	// Select Market based on language and other parameters
+	console.log('language to be switched is ' + language)
+
+	var frMarkets = ['FR', 'BE']
+	var nlMarkets = ['NL', 'BE']
+	var deMarkets = ['DE']
+	var enMarkets = ['FR', 'BE', 'NL', 'DE']
+
+	console.log('Testing german in frMarkets : ' + isInArray('DE', frMarkets))
+
 	switch (language) {
-		case 'de' :
-			market = 'DE'
+
 		case 'fr' :
-			if (c.url && c.urlCountry && c.urlCountry.value == ('FR' || 'BE')) {
+			// If a parameter hints to france or belgium, let's use that
+			if (c.url.value && isInArray(c.urlCountry.value, frMarkets)) {
 				market = c.urlCountry.value
-				if (market = 'FR') message = viewingFromOtherCountry(language, market, 'BE')
-				else message = viewingFromOtherCountry(language, market, 'FR')
-			} else if (c.account && c.accountCountry && c.accountCountry.value == ('FR' || 'BE')) {
-				// si le pays est déjà définit dans le compte, alors tout va bien
+				console.log(yell(market, 'language and url'))
+			} else if (c.account.value && isInArray(c.accountCountry.value, frMarkets)) {
 				market = c.accountCountry.value
-			} else if (c.cookie && c.cookieCountry && c.cookieCountry.value == ('FR' || 'BE')) {
+				console.log(yell(market, 'language and account'))
+			} else if (c.cookie.value && isInArray(c.cookieCountry.value, frMarkets)) {
 				market = c.cookieCountry.value
+				console.log(yell(market, 'language and cookie'))	
+			} else if (isInArray(c.ipCountry.value, frMarkets)) {
+				market = c.ipCountry.value
+				console.log(yell(market, 'language and IP address'))
+			} else {
+				market = 'FR'
+				console.log(yell(market, 'language and default market'))
+				message = justPickSomethingAlready(language, market)
+			}
+			break
+
+		case 'en' :
+			// There is no native market for that language, so use whatever hints we have
+			if (c.url.value && c.urlCountry.value) {
+				market = c.urlCountry.value
+				console.log(yell(market, 'language and url'))
+			} else if (c.account.value && c.accountCountry.value) {
+				market = c.accountCountry.value
+				console.log(yell(market, 'language and account'))
+			} else if (c.cookie.value && c.cookieCountry.value) {
+				market = c.cookieCountry.value
+				console.log(yell(market, 'language and cookie'))
 			} else {
 				market = c.ipCountry.value
+				console.log(yell(market, 'language and IP address'))
 			}
-	}
+			break
+
+		case 'de' :
+			// only compatible with one market, so it's easier
+			market = 'DE'
+			console.log(yell(market, 'language'))
+			if (
+				(c.url.value && c.urlCountry.value != 'DE') &&
+				(c.account.value && c.accountCountry.value != 'DE') &&
+				(c.cookie.value && c.cookieCountry.value != 'DE') &&
+				(c.ipCountry.value != 'DE')
+				) {
+				// if no parameters hint to the DE market, let's ask the question anyway
+				message = justPickSomethingAlready(language, market)
+			} 
+			break
+
+		case 'nl' :
+			// same as french but with netherlands and belgium instead of france and belgium
+			if (c.url.value && isInArray(c.cookieCountry.value, nlMarkets)) {
+				market = c.urlCountry.value
+				console.log(yell(market, 'language and url'))
+			} else if (c.account.value && isInArray(c.accountCountry.value, nlMarkets)) {
+				market = c.accountCountry.value
+				console.log(yell(market, 'language and account'))
+			} else if (c.cookie.value && isInArray(c.cookieCountry.value, nlMarkets)) {
+				market = c.cookieCountry.value
+				console.log(yell(market, 'language and cookie'))
+			} else if (isInArray(c.ipCountry.value, nlMarkets)) {
+				market = c.ipCountry.value
+				console.log(yell(market, 'language and IP address'))
+			} else {
+				market = 'NL'
+				console.log(yell(market, 'language and default market'))
+				message = justPickSomethingAlready(language, market)
+			}
+			break
+
+		}
 
 //	if (c.cookie != c.account) {} ==> Mettre à jour le compte
 
-	if (c.url && c.urlCountry.value != market ||
-		c.account && c.accountCountry.value != market ||
-		c.cookie && c.cookieCountry.value != market ||
+	if (c.url.value && c.urlCountry.value != market ||
+		c.account.value && c.accountCountry.value != market ||
+		c.cookie.value && c.cookieCountry.value != market ||
 		c.ipCountry.value != market && !(c.cookie || c.account)
 		) {
 		message = justPickSomethingAlready(language, market)
