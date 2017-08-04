@@ -115,20 +115,6 @@ function vueSetup() {
 
 				<form>
 
-					<h4>Navigateur</h4>
-					<language-selector
-						:input="state.browserLanguage"
-						></language-selector>
-
-					<hr/>
-
-					<h4>IP</h4>
-					<country-selector
-						:input="state.ipCountry"
-						></country-selector>
-
-					<hr/>
-
 					<h4>URL</h4>
 					<check-box
 						:input="state.url"
@@ -174,6 +160,20 @@ function vueSetup() {
 						v-if="state.cookie.value"
 						:input="state.cookieCountry"
 						></country-selector>
+
+					<h4>Navigateur</h4>
+					<language-selector
+						:input="state.browserLanguage"
+						></language-selector>
+
+					<hr/>
+
+					<h4>IP</h4>
+					<country-selector
+						:input="state.ipCountry"
+						></country-selector>
+
+					<hr/>
 
 				</form>
 
